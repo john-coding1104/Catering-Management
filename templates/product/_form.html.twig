@@ -1,0 +1,49 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
+    <div class="grid grid-cols-1 gap-4">
+        <div>
+            {{ form_label(form.supplier) }}
+            {{ form_widget(form.supplier, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.supplier) }}
+        </div>
+        
+        <div>
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+        
+        <div>
+            {{ form_label(form.category) }}
+            {{ form_widget(form.category, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.category) }}
+        </div>
+        
+        <div>
+            {{ form_label(form.unitPrice) }}
+            {{ form_widget(form.unitPrice, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.unitPrice) }}
+        </div>
+        
+        <div>
+            {{ form_label(form.createDate) }}
+            {{ form_widget(form.createDate, {'attr': {'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.createDate) }}
+        </div>
+        
+        <div>
+            {{ form_label(form.imagePath) }}
+            <div class="mt-1">
+                <label class="inline-block cursor-pointer">
+                    <span class="bg-[#235A2F] hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors">
+                        Choose Image
+                    </span>
+                    {{ form_widget(form.imagePath, {'attr': {'class': 'hidden'}}) }}
+                </label>
+            </div>
+            {{ form_errors(form.imagePath) }}
+        </div>
+    </div>
+    <div class="flex items-center justify-end">
+        <button type="submit" class="bg-[#235A2F] hover:bg-green-700 text-white px-4 py-2 rounded-md">{{ button_label|default('Save') }}</button>
+    </div>
+{{ form_end(form) }}

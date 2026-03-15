@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --brand-dark: #235A2F;
+        --brand-dark-80: rgba(35, 90, 47, 0.8);
+        --brand-light: #f6f7fb;
+        --text-main: #0f172a;
+        --text-muted: #4b5563;
+        --card-bg: rgba(255, 255, 255, 0.92);
+        --border: rgba(255, 255, 255, 0.4);
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    }
+    body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(120deg, var(--brand-dark) 0%, #1b4a26 40%, #0f2c16 100%);
+        color: var(--text-main);
+    }
+    .login-page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .login-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(160deg, rgba(0,0,0,0.35), rgba(0,0,0,0.45)),
+            url('{{ asset('image/2.png') }}') center/cover no-repeat;
+        filter: brightness(0.85);
+        transform: scale(1.02);
+    }
+    .login-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(35, 90, 47, 0.8), rgba(18, 18, 18, 0.6));
+    }
+    .login-card {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr;
+        width: min(960px, 92vw);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    .login-media {
+        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.25));
+        color: #fff;
+        padding: 48px;
+    }
+    .login-media h1 {
+        margin: 0 0 12px;
+        font-size: clamp(32px, 4vw, 42px);
+        line-height: 1.2;
+    }
+    .login-media p {
+        margin: 0;
+        color: rgba(255,255,255,0.82);
+        font-size: 16px;
+    }
+    .login-form {
+        background: var(--card-bg);
+        padding: 48px;
+    }
+    .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+    .brand-mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--brand-dark);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    .brand-name {
+        font-weight: 700;
+        color: var(--brand-dark);
+        font-size: 18px;
+    }
+    .form-title {
+        margin: 0 0 6px;
+        color: var(--text-main);
+        font-size: 24px;
+        font-weight: 700;
+    }
+    .form-subtitle {
+        margin: 0 0 24px;
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+    .field {
+        margin-bottom: 18px;
+    }
+    .field label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+    .input-wrap {
+        position: relative;
+    }
+    .input-wrap input {
+        width: 100%;
+        padding: 14px 14px 14px 44px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 15px;
+        color: var(--text-main);
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-wrap input:focus {
+        outline: none;
+        border-color: var(--brand-dark);
+        box-shadow: 0 0 0 3px rgba(35, 90, 47, 0.15);
+    }
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        transform: translateY(-50%);
+        color: var(--brand-dark);
+        font-size: 16px;
+    }
+    .actions {
+        margin-top: 10px;
+    }
+    .btn-primary {
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        background: linear-gradient(120deg, var(--brand-dark), #1c4d28);
+        color: #fff;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 12px 30px rgba(35, 90, 47, 0.28);
+        transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+    }
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 8px 20px rgba(35, 90, 47, 0.22);
+    }
+    .error-box {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecdd3;
+        font-size: 14px;
+    }
+    .logged-in-note {
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+    @media (min-width: 900px) {
+        .login-card { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+
+<div class="login-page">
+    <div class="login-bg" aria-hidden="true"></div>
+    <div class="login-overlay" aria-hidden="true"></div>
+
+    <div class="login-card">
+        <div class="login-media">
+            <h1>A Taste For Every Occasion</h1>
+            <p>Welcome to Every Event. Log in to continue managing your bookings, services, and inventory through a seamless and user-friendly experience</p>
+        </div>
+
+        <div class="login-form">
+            <div class="brand-row">
+                <div class="brand-mark">EE</div>
+                <div class="brand-name">Every Event</div>
+            </div>
+
+            {% if app.user %}
+                <div class="logged-in-note">
+                    You are logged in as {{ app.user.userIdentifier }}. <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="error-box">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                <div class="field">
+                    <label for="inputUsername">Email or Username</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="text" value="{{ last_username }}" name="username" id="inputUsername" autocomplete="username" required autofocus>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="inputPassword">Password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" name="password" id="inputPassword" autocomplete="current-password" required>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                <div class="actions">
+                    <button class="btn-primary" type="submit">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

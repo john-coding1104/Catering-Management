@@ -3,18 +3,11 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-<h1>Welcome</h1>
 
-{% if app.user %}
-            <p>
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-            </p>
 
-    {%else%}
+<h1>Every Event Catering Services</h1>
+<h2>a taste for every occasion</h2>
 
-        <p>  <a href = "{{path ('app_register')}}">Register</a> or
-             <a href = "{{path('app_login' )}}">log in</a>.
-             </p>
-        {% endif %}
+
 
 {% endblock %}

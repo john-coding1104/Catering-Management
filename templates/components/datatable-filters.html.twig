@@ -1,0 +1,77 @@
+{# 
+    Reusable DataTable Filter Template Partial
+    
+    Usage in your template:
+    {% set filters = {
+        'search_field_id': {'type': 'text', 'label': 'Search Name', 'placeholder': 'Type...'},
+        'status_dropdown': {'type': 'select', 'label': 'Status', 'options': [
+            {'value': '', 'label': 'All Statuses'},
+            {'value': 'active', 'label': 'Active'},
+            {'value': 'inactive', 'label': 'Inactive'}
+        ]},
+        'category_dropdown': {'type': 'select', 'label': 'Category', 'options': category_options}
+    } %}
+    {% include 'components/datatable-filters.html.twig' with {'filters': filters} %}
+#}
+
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+    <div class="space-y-4">
+        <!-- Filter Controls Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for filter_id, filter_config in filters %}
+                {% if filter_config.type == 'text' %}
+                    <!-- Text Input Filter -->
+                    <div>
+                        <label for="{{ filter_id }}" class="block text-sm font-medium text-gray-700">
+                            {{ filter_config.label }}
+                        </label>
+                        <input 
+                            type="text" 
+                            id="{{ filter_id }}" 
+                            placeholder="{{ filter_config.placeholder|default('Search...') }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                        >
+                    </div>
+                
+                {% elseif filter_config.type == 'select' %}
+                    <!-- Select Dropdown Filter -->
+                    <div>
+                        <label for="{{ filter_id }}" class="block text-sm font-medium text-gray-700">
+                            {{ filter_config.label }}
+                        </label>
+                        <select 
+                            id="{{ filter_id }}" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                        >
+                            {% for option in filter_config.options %}
+                                <option value="{{ option.value|default('') }}">
+                                    {{ option.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                
+                {% elseif filter_config.type == 'date' %}
+                    <!-- Date Filter -->
+                    <div>
+                        <label for="{{ filter_id }}" class="block text-sm font-medium text-gray-700">
+                            {{ filter_config.label }}
+                        </label>
+                        <input 
+                            type="date" 
+                            id="{{ filter_id }}"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                        >
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+            <button id="clear-filters" class="inline-flex items-center rounded-md bg-gray-400 px-4 py-2 text-white hover:opacity-90 transition">
+                Clear Filters
+            </button>
+        </div>
+    </div>
+</div>

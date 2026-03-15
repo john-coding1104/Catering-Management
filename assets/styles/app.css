@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@source not "../../public";
+
+/* Brand utilities */
+@utility brand-primary {
+  color: #235A2F;
+}
+@utility brand-accent {
+  color: #ED1C24;
+}
+@utility brand-bg-primary {
+  background-color: #235A2F;
+}
+@utility brand-bg-accent {
+  background-color: #ED1C24;
+}
+

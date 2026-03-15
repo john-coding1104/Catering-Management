@@ -1,0 +1,233 @@
+{{ form_start(form, { attr: { class: 'space-y-4' } }) }}
+    {# Show any top-level form errors (e.g., missing inventory selection) #}
+    {% if form_errors(form) is not empty %}
+        <div class="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 gap-4">
+        <div>
+            {{ form_label(form.service, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.service, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]', 'id': 'service-select'}}) }}
+            {{ form_errors(form.service) }}
+        </div>
+        <div>
+            {{ form_label(form.customerName, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.customerName, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]'}}) }}
+            {{ form_errors(form.customerName) }}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                {{ form_label(form.eventDate, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.eventDate, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]', 'id': 'event-date'}}) }}
+                {% if form.eventDate.vars.help %}
+                    <p class="text-sm text-gray-600 mt-2">{{ form.eventDate.vars.help }}</p>
+                {% endif %}
+                {% if form_errors(form.eventDate) is not empty %}
+                    <div class="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700 mt-2">
+                        {{ form_errors(form.eventDate) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                {{ form_label(form.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.status, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]'}}) }}
+                {{ form_errors(form.status) }}
+            </div>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+                Inventory items for this booking
+                {% if not isEdit %}<span class="text-red-600">*</span>{% endif %}
+            </label>
+            <p class="text-sm text-gray-600 mb-3">
+                {% if isEdit %}
+                    Select inventory items if you want to modify the inventory for this booking. Leave empty to keep the current inventory unchanged.
+                {% else %}
+                    Select at least one inventory item and the quantity to be used for this booking.
+                {% endif %}
+            </p>
+
+            {% if availableInventory is defined and availableInventory|length > 0 %}
+                <div class="space-y-3 border border-gray-300 bg-gray-50 rounded-md p-4">
+                    {% for item in availableInventory %}
+                        <div class="flex items-end gap-3 p-3 bg-white border border-gray-200 rounded-md">
+                            <div class="flex-1">
+                                <label class="flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="inventory_items[]"
+                                        value="{{ item.id }}"
+                                        class="inventory-checkbox w-4 h-4 text-[#235A2F] rounded"
+                                    >
+                                    <span class="ml-3">
+                                        <strong class="text-gray-800">{{ item.name }}</strong>
+                                        <span class="text-sm text-gray-600 ml-2">
+                                            (Available: <span class="font-semibold">{{ item.currentStock }}</span> {{ item.unit }})
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="w-32">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Quantity to Use</label>
+                                <input
+                                    type="number"
+                                    name="inventory_quantity_{{ item.id }}"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                    class="inventory-qty w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                    data-item-id="{{ item.id }}"
+                                    data-available="{{ item.currentStock }}"
+                                >
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                    <p class="text-sm text-yellow-700">No active inventory items available. Please add inventory before creating a booking.</p>
+                </div>
+            {% endif %}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                {{ form_label(form.guestCount, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.guestCount, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]', 'id': 'guest-count'}}) }}
+                {{ form_errors(form.guestCount) }}
+            </div>
+            <div>
+                {{ form_label(form.totalPrice, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.totalPrice, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F] bg-gray-50', 'id': 'total-price'}}) }}
+                {{ form_errors(form.totalPrice) }}
+            </div>
+        </div>
+    </div>
+    <div class="pt-2">
+        <button class="inline-flex items-center rounded-md bg-[#235A2F] px-4 py-2 text-white hover:opacity-90">{{ button_label|default('Save') }}</button>
+    </div>
+{{ form_end(form) }}
+
+<script>
+// Function to initialize booking form - only runs when form elements exist
+function initializeBookingFormCalculation() {
+    const serviceSelect = document.getElementById('service-select');
+    const guestCountInput = document.getElementById('guest-count');
+    const totalPriceInput = document.getElementById('total-price');
+    const eventDateInput = document.getElementById('event-date');
+    
+    // Check if all required elements exist - only initialize if we're on a booking form page
+    if (!serviceSelect || !guestCountInput || !totalPriceInput) {
+        return; // Silently return if elements don't exist (not on booking form page)
+    }
+    
+    // === DATE VALIDATION ===
+    if (eventDateInput) {
+        function validateEventDate(input) {
+            // Clear previous validation state
+            input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+            input.classList.add('border-gray-300', 'focus:border-[#235A2F]', 'focus:ring-[#235A2F]');
+            
+            if (input.value) {
+                const selectedDate = new Date(input.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    input.classList.remove('border-gray-300', 'focus:border-[#235A2F]', 'focus:ring-[#235A2F]');
+                    input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                    showDateValidationError('The booking date must be today or a future date. Past dates are not allowed.');
+                } else {
+                    clearDateValidationError();
+                }
+            }
+        }
+        
+        function showDateValidationError(message) {
+            // Remove any existing error message
+            const existingError = eventDateInput.parentElement.querySelector('.booking-date-error');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Add new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'booking-date-error rounded-md bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700 mt-2';
+            errorDiv.textContent = message;
+            eventDateInput.parentElement.appendChild(errorDiv);
+        }
+        
+        function clearDateValidationError() {
+            const existingError = eventDateInput.parentElement.querySelector('.booking-date-error');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+        
+        // Validate on change
+        eventDateInput.addEventListener('change', function() {
+            validateEventDate(this);
+        });
+        
+        // Validate on blur
+        eventDateInput.addEventListener('blur', function() {
+            validateEventDate(this);
+        });
+    }
+    
+    // === PRICE CALCULATION ===
+    
+    // Service data - in a real app, this would come from an API
+    const serviceData = {
+        {% for service in services %}
+        {{ service.id }}: {
+            basePrice: {{ service.basePrice }},
+            minGuests: {{ service.minGuests }},
+            maxGuests: {{ service.maxGuests }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+    
+    function calculateTotalPrice() {
+        const selectedServiceId = serviceSelect.value;
+        const guestCount = parseInt(guestCountInput.value) || 0;
+        
+        if (selectedServiceId && guestCount > 0) {
+            const service = serviceData[selectedServiceId];
+            if (service) {
+                
+                if (guestCount >= service.minGuests && guestCount <= service.maxGuests) {
+                    const totalPrice = service.basePrice * guestCount;
+                    totalPriceInput.value = totalPrice.toFixed(2);
+                } else {
+                    totalPriceInput.value = '0.00';
+                    if (guestCount < service.minGuests) {
+                        alert(`Minimum guests required: ${service.minGuests}`);
+                    } else if (guestCount > service.maxGuests) {
+                        alert(`Maximum guests allowed: ${service.maxGuests}`);
+                    }
+                }
+            }
+        } else {
+            totalPriceInput.value = '';
+        }
+    }
+    
+    // Add event listeners
+    serviceSelect.addEventListener('change', calculateTotalPrice);
+    guestCountInput.addEventListener('input', calculateTotalPrice);
+    
+    // Calculate initial price if form is pre-filled
+    calculateTotalPrice();
+}
+
+// Initialize immediately since this script is only included on booking form pages
+initializeBookingFormCalculation();
+
+// Also initialize on Turbo events in case of dynamic loading
+document.addEventListener('turbo:load', initializeBookingFormCalculation);
+document.addEventListener('turbo:render', initializeBookingFormCalculation);
+</script>
+
+

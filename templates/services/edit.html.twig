@@ -1,0 +1,20 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Services{% endblock %}
+
+{% block admin_body %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-semibold text-gray-800">Edit Service</h1>
+        <a href="{{ path('app_services_index') }}" class="inline-flex items-center rounded-md bg-gray-600 px-3 py-1.5 text-white hover:opacity-90">Back to list</a>
+    </div>
+
+    <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm p-4">
+        {{ include('services/_form.html.twig', {'button_label': 'Update'}) }}
+    </div>
+
+    <div class="mt-4">
+        {{ include('services/_delete_form.html.twig') }}
+    </div>
+</div>
+{% endblock %}

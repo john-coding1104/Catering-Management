@@ -1,0 +1,302 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block admin_body %}
+<!-- HEADER -->
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Inventory Management</h1>
+        <p class="text-gray-600 mt-1">Manage your event supplies and equipment</p>
+    </div>
+    <a href="{{ path('app_inventory_new') }}" class="bg-[#235A2F] text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+        <span>➕</span>
+        <span>Add New Item</span>
+    </a>
+</div>
+
+<!-- STATISTICS CARD -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Total Items</div>
+                <div class="mt-1 text-2xl font-bold text-gray-800">{{ stats.total_items ?? 0 }}</div>
+            </div>
+            <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-lg">📦</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Low Stock</div>
+                <div class="mt-1 text-2xl font-bold text-yellow-600">{{ stats.low_stock_count ?? 0 }}</div>
+            </div>
+            <div class="h-10 w-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-lg">⚠️</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Out of Stock</div>
+                <div class="mt-1 text-2xl font-bold text-red-600">{{ stats.out_of_stock_count ?? 0 }}</div>
+            </div>
+            <div class="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+                <span class="text-red-600 text-lg">🚫</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Total Value</div>
+                <div class="mt-1 text-2xl font-bold text-green-600">₱{{ (stats.total_value ?? 0)|number_format(2, '.', ',') }}</div>
+            </div>
+            <div class="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-lg">💰</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEARCH AND FILTER -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+    <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Item Name Search -->
+            <div>
+                <label for="search-name" class="block text-sm font-medium text-gray-700">Item Name</label>
+                <input 
+                    type="text" 
+                    id="search-name" 
+                    placeholder="Search by item..."
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                >
+            </div>
+
+            <!-- Category Filter -->
+            <div>
+                <label for="filter-category" class="block text-sm font-medium text-gray-700">Category</label>
+                <select id="filter-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+                <label for="filter-status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select id="filter-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="discontinued">Discontinued</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button id="clear-filters" class="inline-flex items-center rounded-md bg-gray-400 px-4 py-2 text-white hover:opacity-90">
+                Clear Filters
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="flex gap-2 mb-6">
+    <a href="{{ path('app_inventory_low_stock') }}" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors text-sm">
+        ⚠️ Low Stock ({{ low_stock_items|length }})
+    </a>
+    <a href="{{ path('app_inventory_expiring') }}" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors text-sm">
+        📅 Expiring Soon ({{ expiring_items|length }})
+    </a>
+    <a href="{{ path('app_inventory_stats') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm">
+        📊 Statistics
+    </a>
+</div>
+
+<!-- INVENTORY TABLE -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table id="inventory-table" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for inventory in inventories %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">{{ inventory.name }}</div>
+                            {% if inventory.description %}
+                                <div class="text-sm text-gray-500 truncate max-w-xs">{{ inventory.description }}</div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ inventory.category }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-900">{{ inventory.currentStock }} {{ inventory.unit }}</div>
+                                <div class="text-xs text-gray-500">Min: {{ inventory.minimumStock }} | Max: {{ inventory.maximumStock }}</div>
+                            </div>
+                            <div class="ml-2">
+                                {% if inventory.isOutOfStock() %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Out of Stock
+                                    </span>
+                                {% elseif inventory.isLowStock() %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Low Stock
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        In Stock
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">₱{{ inventory.unitPrice|number_format(2, '.', ',') }}</div>
+                        <div class="text-xs text-gray-500">Total: ₱{{ inventory.totalValue|number_format(2, '.', ',') }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            {% if inventory.status == 'active' %}bg-green-100 text-green-800
+                            {% elseif inventory.status == 'inactive' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ inventory.status|title }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-900">{{ inventory.createdBy ? inventory.createdBy.username : '-' }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <a href="{{ path('app_inventory_show', {'id': inventory.id}) }}" 
+                               class="text-[#235A2F] hover:text-green-700">View</a>
+                            <a href="{{ path('app_inventory_edit', {'id': inventory.id}) }}" 
+                               class="text-blue-600 hover:text-blue-900">Edit</a>
+                            <form method="post" action="{{ path('app_inventory_delete', {'id': inventory.id}) }}" 
+                                  onsubmit="return confirm('Are you sure you want to delete this item?');" class="inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ inventory.id) }}">
+                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <div class="text-gray-500">
+                            <div class="text-4xl mb-4">📦</div>
+                            <div class="text-lg font-medium mb-2">No inventory items found</div>
+                            <div class="text-sm mb-4">Get started by adding your first inventory item</div>
+                            <a href="{{ path('app_inventory_new') }}" class="bg-[#235A2F] text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                Add First Item
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+function initializeInventoryTable() {
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#inventory-table')) {
+        $('#inventory-table').DataTable().destroy();
+    }
+
+    const table = $('#inventory-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>'
+    });
+
+    // Column indices: Item at 0, Category at 1, Status at 4, CreatedBy at 5
+    const COL_ITEM = 0;
+    const COL_CATEGORY = 1;
+    const COL_STATUS = 4;
+
+    // Filter by Category dropdown
+    $('#filter-category').off('change').on('change', function() {
+        table.column(COL_CATEGORY).search(this.value).draw();
+    });
+
+    // Filter by Status dropdown
+    $('#filter-status').off('change').on('change', function() {
+        table.column(COL_STATUS).search(this.value).draw();
+    });
+
+    // Search by Item Name with debouncing
+    let searchTimeout;
+    $('#search-name').off('keyup').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchValue = this.value;
+        searchTimeout = setTimeout(() => {
+            table.column(COL_ITEM).search(searchValue).draw();
+        }, 300);
+    });
+
+    // Clear all filters
+    $('#clear-filters').off('click').on('click', function(e) {
+        e.preventDefault();
+        
+        $('#filter-category').val('').trigger('change');
+        $('#filter-status').val('').trigger('change');
+        $('#search-name').val('');
+        
+        table.search('').columns().search('').draw();
+    });
+}
+
+// Initialize on page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeInventoryTable);
+document.addEventListener('turbo:load', initializeInventoryTable);
+document.addEventListener('turbo:render', initializeInventoryTable);
+</script>
+
+<!-- PAGINATION (IF NEEDED) -->
+{% if inventories|length > 0 %}
+<div class="mt-6 flex items-center justify-between">
+    <div class="text-sm text-gray-700">
+        Showing {{ inventories|length }} item(s)
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Product{% endblock %}
+
+{% block admin_body %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
+        <div class="flex items-start justify-between mb-6">
+            <div class="flex items-center gap-4">
+                {% if product.imagePath %}
+                    <img src="{{ asset(product.imagePath) }}" alt="{{ product.name }}" class="w-20 h-20 object-cover rounded-md" />
+                {% endif %}
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">{{ product.name }}</h1>
+                    <p class="text-sm text-gray-500">Product details</p>
+                </div>
+            </div>
+            <div class="space-x-2">
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="inline-block bg-green-600 text-white px-3 py-1 rounded-md">Edit</a>
+                {{ include('product/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600">Category</h3>
+                <p class="mt-1 text-gray-800">{{ product.category }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600">Unit Price</h3>
+                <p class="mt-1 text-gray-800">{{ product.unitPrice }}</p>
+            </div>
+            <div class="md:col-span-2">
+                <h3 class="text-sm font-semibold text-gray-600">Created At</h3>
+                <p class="mt-1 text-gray-800">{{ product.createDate ? product.createDate|date('Y-m-d H:i') : '' }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ path('app_product_index') }}" class="text-sm text-gray-600 hover:underline">← Back to list</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

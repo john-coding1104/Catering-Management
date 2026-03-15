@@ -1,0 +1,261 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Activity Logs{% endblock %}
+
+{% block admin_body %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Activity Logs</h1>
+        <div class="text-sm text-gray-600">
+            Total: <span class="font-semibold">{{ total_count }}</span> records
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Action Filter -->
+                <div>
+                    <label for="action" class="block text-sm font-medium text-gray-700">Action</label>
+                    <select id="action" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Actions</option>
+                        {% for actionObj in available_actions %}
+                            <option value="{{ actionObj.action }}">
+                                {{ actionObj.action }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Record Type Filter -->
+                <div>
+                    <label for="record_type" class="block text-sm font-medium text-gray-700">Record Type</label>
+                    <select id="record_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Types</option>
+                        {% for recordObj in available_record_types %}
+                            <option value="{{ recordObj.recordType }}">
+                                {{ recordObj.recordType }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Role Filter -->
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                    <select id="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Roles</option>
+                        {% for roleObj in available_roles %}
+                            <option value="{{ roleObj.role }}">
+                                {{ roleObj.role }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Username Search -->
+                <div>
+                    <label for="username-search" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input 
+                        type="text" 
+                        id="username-search" 
+                        placeholder="Search username..."
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                    >
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="clear-filters" class="inline-flex items-center rounded-md bg-gray-400 px-4 py-2 text-white hover:opacity-90">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    {% if logs|length > 0 %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <table id="activity-logs-table" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Record Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for log in logs %}
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                {{ log.createdAt|date('Y-m-d H:i:s') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span class="font-medium">{{ log.username }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if 'ADMIN' in log.role %}
+                                        bg-red-100 text-red-800
+                                    {% elseif 'STAFF' in log.role %}
+                                        bg-blue-100 text-blue-800
+                                    {% else %}
+                                        bg-gray-100 text-gray-800
+                                    {% endif %}
+                                ">
+                                    {{ log.role }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if log.action == 'CREATE' %}
+                                        bg-green-100 text-green-800
+                                    {% elseif log.action == 'UPDATE' %}
+                                        bg-blue-100 text-blue-800
+                                    {% elseif log.action == 'DELETE' %}
+                                        bg-red-100 text-red-800
+                                    {% elseif log.action == 'LOGIN' %}
+                                        bg-purple-100 text-purple-800
+                                    {% elseif log.action == 'LOGOUT' %}
+                                        bg-gray-100 text-gray-800
+                                    {% else %}
+                                        bg-yellow-100 text-yellow-800
+                                    {% endif %}
+                                ">
+                                    {{ log.action }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                {% if log.recordType %}
+                                    <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
+                                        {{ log.recordType }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                                {{ log.targetData|default('-') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ path('app_activity_logs_show', {'id': log.id}) }}" class="text-[#235A2F] hover:text-[#1a4a26]">
+                                    View
+                                </a>
+                                {% if log.recordType and log.recordId %}
+                                    <span class="text-gray-300 mx-2">|</span>
+                                    <a href="{{ path('app_activity_logs_by_record', {'recordType': log.recordType, 'recordId': log.recordId}) }}" class="text-[#235A2F] hover:text-[#1a4a26]">
+                                        Record History
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <p class="text-gray-600 text-lg">No activity logs found.</p>
+            <a href="{{ path('app_activity_logs_index') }}" class="mt-4 inline-flex items-center rounded-md bg-[#235A2F] px-4 py-2 text-white hover:opacity-90">
+                Clear Filters
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Include DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<!-- Include Custom DataTable Auto-Search Module -->
+<script src="{{ asset('js/datatable-auto-search.js') }}"></script>
+
+<script>
+function initializeActivityLogsTable() {
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#activity-logs-table')) {
+        $('#activity-logs-table').DataTable().destroy();
+    }
+
+    // Initialize DataTable
+    const table = $('#activity-logs-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>',
+        language: {
+            search: "Global Search:",
+            searchPlaceholder: "Type to search all columns...",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            infoEmpty: "No entries available",
+            zeroRecords: "No matching records found"
+        }
+    });
+
+    // Column indices
+    const COL_USERNAME = 1;
+    const COL_ROLE = 2;
+    const COL_ACTION = 3;
+    const COL_RECORD_TYPE = 4;
+
+    // Apply column-based filters when dropdown changes
+    $('#action').off('change').on('change', function() {
+        table.column(COL_ACTION).search(this.value).draw();
+    });
+
+    $('#record_type').off('change').on('change', function() {
+        table.column(COL_RECORD_TYPE).search(this.value).draw();
+    });
+
+    $('#role').off('change').on('change', function() {
+        table.column(COL_ROLE).search(this.value).draw();
+    });
+
+    // Apply username search with debouncing
+    let searchTimeout;
+    $('#username-search').off('keyup').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchValue = this.value;
+        searchTimeout = setTimeout(function() {
+            table.column(COL_USERNAME).search(searchValue).draw();
+        }, 300);
+    });
+
+    // Clear all filters
+    $('#clear-filters').off('click').on('click', function(e) {
+        e.preventDefault();
+        
+        // Reset all dropdown filters
+        $('#action').val('').trigger('change');
+        $('#record_type').val('').trigger('change');
+        $('#role').val('').trigger('change');
+        
+        // Reset search input
+        $('#username-search').val('');
+        
+        // Clear global search
+        table.search('').draw();
+        
+        // Clear all column searches
+        table.columns().search('').draw();
+    });
+}
+
+// Initialize on page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeActivityLogsTable);
+document.addEventListener('turbo:load', initializeActivityLogsTable);
+document.addEventListener('turbo:render', initializeActivityLogsTable);
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Booking Details{% endblock %}
+
+{% block admin_body %}
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-semibold text-gray-800">Booking Details</h1>
+        <div class="space-x-2">
+            <a href="{{ path('app_bookings_index') }}" class="inline-flex items-center rounded-md bg-gray-600 px-3 py-1.5 text-white hover:opacity-90">Back to list</a>
+            <a href="{{ path('app_bookings_edit', {'id': booking.id}) }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-white hover:opacity-90">Edit</a>
+        </div>
+    </div>
+
+    <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <table class="min-w-full table-auto text-sm">
+            <tbody class="divide-y divide-gray-100 text-gray-800">
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Id</th>
+                    <td class="px-4 py-3">{{ booking.id }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Service</th>
+                    <td class="px-4 py-3">{{ booking.service ? booking.service.name : '' }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Customer</th>
+                    <td class="px-4 py-3">{{ booking.customerName }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Event Date</th>
+                    <td class="px-4 py-3">{{ booking.eventDate ? booking.eventDate|date('Y-m-d H:i') : '' }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                    <td class="px-4 py-3 capitalize">{{ booking.status }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Guests</th>
+                    <td class="px-4 py-3">{{ booking.guestCount }}</td>
+                </tr>
+                <tr>
+                    <th class="w-48 bg-gray-50 px-4 py-3 text-left font-medium text-gray-600">Total</th>
+                    <td class="px-4 py-3">₱{{ booking.totalPrice|number_format(2, '.', ',') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <form method="post" action="{{ path('app_bookings_delete', {'id': booking.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" class="inline-block">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ booking.id) }}">
+            <button class="inline-flex items-center rounded-md bg-red-600 px-3 py-1.5 text-white hover:bg-red-700">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+

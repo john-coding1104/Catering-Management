@@ -1,0 +1,191 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Bookings{% endblock %}
+
+{% block admin_body %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-semibold text-gray-800">Bookings</h1>
+        <a href="{{ path('app_bookings_new') }}" class="inline-flex items-center rounded-md bg-[#235A2F] px-4 py-2 text-white hover:opacity-90">New Booking</a>
+    </div>
+
+    <!-- SEARCH AND FILTER -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Customer Search -->
+                <div>
+                    <label for="search-customer" class="block text-sm font-medium text-gray-700">Customer Name</label>
+                    <input 
+                        type="text" 
+                        id="search-customer" 
+                        placeholder="Search customer..."
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                    >
+                </div>
+
+                <!-- Service Filter -->
+                <div>
+                    <label for="filter-service" class="block text-sm font-medium text-gray-700">Service</label>
+                    <select id="filter-service" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Services</option>
+                        {% for service in services %}
+                            <option value="{{ service.name }}">{{ service.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div>
+                    <label for="filter-status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="filter-status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="clear-filters" class="inline-flex items-center rounded-md bg-gray-400 px-4 py-2 text-white hover:opacity-90">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table id="bookings-table" class="min-w-full table-auto text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-medium">Image</th>
+                        <th class="px-4 py-3 text-left font-medium">Service</th>
+                        <th class="px-4 py-3 text-left font-medium">Customer</th>
+                        <th class="px-4 py-3 text-left font-medium">Event Date</th>
+                        <th class="px-4 py-3 text-left font-medium">Status</th>
+                        <th class="px-4 py-3 text-left font-medium">Guests</th>
+                        <th class="px-4 py-3 text-left font-medium">Total</th>
+                        <th class="px-4 py-3 text-left font-medium">Created By</th>
+                        <th class="px-4 py-3 text-left font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-800">
+                {% for booking in bookings %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">
+                            {% if booking.service and booking.service.image %}
+                                <img src="{{ asset('image/' ~ booking.service.image) }}" alt="{{ booking.service.name }}" class="h-12 w-12 object-cover rounded-md">
+                            {% else %}
+                                <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                    <span class="text-gray-400 text-xs">No image</span>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">{{ booking.service ? booking.service.name : '' }}</td>
+                        <td class="px-4 py-3">{{ booking.customerName }}</td>
+                        <td class="px-4 py-3">{{ booking.eventDate ? booking.eventDate|date('Y-m-d H:i') : '' }}</td>
+                        <td class="px-4 py-3 capitalize">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if booking.status == 'pending' %}
+                                    bg-yellow-100 text-yellow-800
+                                {% elseif booking.status == 'confirmed' %}
+                                    bg-blue-100 text-blue-800
+                                {% elseif booking.status == 'completed' %}
+                                    bg-green-100 text-green-800
+                                {% elseif booking.status == 'cancelled' %}
+                                    bg-red-100 text-red-800
+                                {% else %}
+                                    bg-gray-100 text-gray-800
+                                {% endif %}
+                            ">{{ booking.status }}</span>
+                        </td>
+                        <td class="px-4 py-3">{{ booking.guestCount }}</td>
+                        <td class="px-4 py-3">₱{{ booking.totalPrice|number_format(2, '.', ',') }}</td>
+                        <td class="px-4 py-3">{{ booking.createdBy ? booking.createdBy.username : '-' }}</td>
+                        <td class="px-4 py-3 space-x-2">
+                            <a href="{{ path('app_bookings_show', {'id': booking.id}) }}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-white hover:opacity-90">Show</a>
+                            <a href="{{ path('app_bookings_edit', {'id': booking.id}) }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-white hover:opacity-90">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="px-4 py-6 text-center text-gray-500">No bookings found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+function initializeBookingsTable() {
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#bookings-table')) {
+        $('#bookings-table').DataTable().destroy();
+    }
+
+    const table = $('#bookings-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>'
+    });
+
+    // Column indices
+    const COL_SERVICE = 1;
+    const COL_CUSTOMER = 2;
+    const COL_STATUS = 4;
+
+    // Filter by Service dropdown
+    $('#filter-service').off('change').on('change', function() {
+        table.column(COL_SERVICE).search(this.value).draw();
+    });
+
+    // Filter by Status dropdown
+    $('#filter-status').off('change').on('change', function() {
+        table.column(COL_STATUS).search(this.value).draw();
+    });
+
+    // Search by Customer Name with debouncing
+    let searchTimeout;
+    $('#search-customer').off('keyup').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchValue = this.value;
+        searchTimeout = setTimeout(() => {
+            table.column(COL_CUSTOMER).search(searchValue).draw();
+        }, 300);
+    });
+
+    // Clear all filters
+    $('#clear-filters').off('click').on('click', function(e) {
+        e.preventDefault();
+        
+        $('#filter-service').val('').trigger('change');
+        $('#filter-status').val('').trigger('change');
+        $('#search-customer').val('');
+        
+        table.search('').columns().search('').draw();
+    });
+}
+
+// Initialize on page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeBookingsTable);
+document.addEventListener('turbo:load', initializeBookingsTable);
+document.addEventListener('turbo:render', initializeBookingsTable);
+</script>
+{% endblock %}
+
+

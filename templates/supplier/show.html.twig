@@ -1,0 +1,50 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Supplier{% endblock %}
+
+{% block admin_body %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
+        <div class="flex items-start justify-between mb-6">
+            <div class="flex items-center gap-4">
+                {% if supplier.imagePath %}
+                    <img src="{{ asset(supplier.imagePath) }}" alt="{{ supplier.name }}" class="w-20 h-20 object-cover rounded-md" />
+                {% endif %}
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">{{ supplier.name }}</h1>
+                    <p class="text-sm text-gray-500">Supplier details</p>
+                </div>
+            </div>
+            <div class="space-x-2">
+                <a href="{{ path('app_supplier_edit', {'id': supplier.id}) }}" class="inline-block bg-green-600 text-white px-3 py-1 rounded-md">Edit</a>
+                {{ include('supplier/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600">Contact</h3>
+                <p class="mt-1 text-gray-800">{{ supplier.contact }}</p>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-600">Address</h3>
+                <p class="mt-1 text-gray-800">{{ supplier.address }}</p>
+            </div>
+            <div class="md:col-span-2">
+                <h3 class="text-sm font-semibold text-gray-600">Products</h3>
+                <p class="mt-1 text-gray-800">
+                    {% for product in supplier.products %}
+                        {{ product.name }}{% if not loop.last %}, {% endif %}
+                    {% else %}
+                        —
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ path('app_supplier_index') }}" class="text-sm text-gray-600 hover:underline">← Back to list</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block admin_body %}
+<!-- HEADER -->
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Inventory Statistics</h1>
+        <p class="text-gray-600 mt-1">Overview of your inventory performance</p>
+    </div>
+    <a href="{{ path('app_inventory_index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2">
+        <span>←</span>
+        <span>Back to Inventory</span>
+    </a>
+</div>
+
+<!-- STATISTICS CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Total Items</div>
+                <div class="mt-2 text-3xl font-bold text-gray-800">{{ stats.total_items }}</div>
+            </div>
+            <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-xl">📦</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Low Stock</div>
+                <div class="mt-2 text-3xl font-bold text-yellow-600">{{ stats.low_stock_count }}</div>
+            </div>
+            <div class="h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-xl">⚠️</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Out of Stock</div>
+                <div class="mt-2 text-3xl font-bold text-red-600">{{ stats.out_of_stock_count }}</div>
+            </div>
+            <div class="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
+                <span class="text-red-600 text-xl">🚫</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Total Value</div>
+                <div class="mt-2 text-3xl font-bold text-green-600">₱{{ stats.total_value|number_format(2, '.', ',') }}</div>
+            </div>
+            <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-xl">💰</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- LOW STOCK ITEMS -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Low Stock Items</h3>
+        {% if low_stock_items|length > 0 %}
+            <div class="space-y-3">
+                {% for item in low_stock_items %}
+                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <!-- ITEM IMAGE -->
+                        <div class="flex-shrink-0">
+                            {% if item.imagePath %}
+                                <img src="{{ asset('image/' ~ item.imagePath) }}" alt="{{ item.name }}" 
+                                     class="w-12 h-12 object-cover rounded-lg border border-gray-200">
+                            {% else %}
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                                    <span class="text-gray-400 text-lg">
+                                        {% if 'food' in item.category|lower or 'beverage' in item.category|lower %}
+                                            🍽️
+                                        {% elseif 'equipment' in item.category|lower %}
+                                            🔧
+                                        {% elseif 'tableware' in item.category|lower %}
+                                            🍴
+                                        {% elseif 'linen' in item.category|lower or 'decoration' in item.category|lower %}
+                                            🎨
+                                        {% elseif 'cleaning' in item.category|lower %}
+                                            🧽
+                                        {% elseif 'office' in item.category|lower %}
+                                            📋
+                                        {% else %}
+                                            📦
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- ITEM DETAILS -->
+                        <div>
+                            <div class="font-medium text-gray-800">{{ item.name }}</div>
+                            <div class="text-sm text-gray-500">{{ item.currentStock }} / {{ item.minimumStock }} {{ item.unit }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ path('app_inventory_show', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-800 text-sm">View →</a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No low stock items</p>
+        {% endif %}
+    </div>
+
+    <!-- OUT OF STOCK ITEM -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Out of Stock Items</h3>
+        {% if out_of_stock_items|length > 0 %}
+            <div class="space-y-3">
+                {% for item in out_of_stock_items %}
+                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                    <div class="flex items-center space-x-3">
+                        <!-- ITEM IMAGE -->
+                        <div class="flex-shrink-0">
+                            {% if item.imagePath %}
+                                <img src="{{ asset('image/' ~ item.imagePath) }}" alt="{{ item.name }}" 
+                                     class="w-12 h-12 object-cover rounded-lg border border-gray-200">
+                            {% else %}
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                                    <span class="text-gray-400 text-lg">
+                                        {% if 'food' in item.category|lower or 'beverage' in item.category|lower %}
+                                            🍽️
+                                        {% elseif 'equipment' in item.category|lower %}
+                                            🔧
+                                        {% elseif 'tableware' in item.category|lower %}
+                                            🍴
+                                        {% elseif 'linen' in item.category|lower or 'decoration' in item.category|lower %}
+                                            🎨
+                                        {% elseif 'cleaning' in item.category|lower %}
+                                            🧽
+                                        {% elseif 'office' in item.category|lower %}
+                                            📋
+                                        {% else %}
+                                            📦
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- ITEM DETAILS -->
+                        <div>
+                            <div class="font-medium text-gray-800">{{ item.name }}</div>
+                            <div class="text-sm text-gray-500">0 {{ item.unit }} remaining</div>
+                        </div>
+                    </div>
+                    <a href="{{ path('app_inventory_show', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-800 text-sm">View →</a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No out of stock items</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- RECENT ITEMS -->
+{% if recent_items|length > 0 %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mt-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recently Added Items</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for item in recent_items %}
+        <div class="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+            <div class="flex items-start space-x-3">
+                <!-- ITEM IMAGE -->
+                <div class="flex-shrink-0">
+                    {% if item.imagePath %}
+                        <img src="{{ asset('image/' ~ item.imagePath) }}" alt="{{ item.name }}" 
+                             class="w-16 h-16 object-cover rounded-lg border border-gray-200">
+                    {% else %}
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                            <span class="text-gray-400 text-2xl">
+                                {% if 'food' in item.category|lower or 'beverage' in item.category|lower %}
+                                    🍽️
+                                {% elseif 'equipment' in item.category|lower %}
+                                    🔧
+                                {% elseif 'tableware' in item.category|lower %}
+                                    🍴
+                                {% elseif 'linen' in item.category|lower or 'decoration' in item.category|lower %}
+                                    🎨
+                                {% elseif 'cleaning' in item.category|lower %}
+                                    🧽
+                                {% elseif 'office' in item.category|lower %}
+                                    📋
+                                {% else %}
+                                    📦
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- ITEM DETAILS -->
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-medium text-gray-800 truncate">{{ item.name }}</h4>
+                    <p class="text-sm text-gray-500">{{ item.category }}</p>
+                    <p class="text-sm text-gray-600">Added: {{ item.createdAt|date('M d, Y') }}</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {% if item.status == 'active' %}bg-green-100 text-green-800
+                            {% elseif item.status == 'inactive' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ item.status|title }}
+                        </span>
+                    </div>
+                    <a href="{{ path('app_inventory_show', {'id': item.id}) }}" 
+                       class="inline-block mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        View →
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

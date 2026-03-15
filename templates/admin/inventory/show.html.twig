@@ -1,0 +1,251 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block admin_body %}
+<!-- HEADER -->
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">{{ inventory.name }}</h1>
+        <p class="text-gray-600 mt-1">Inventory Item Details</p>
+    </div>
+    <div class="flex space-x-2">
+        <a href="{{ path('app_inventory_edit', {'id': inventory.id}) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
+            <span>✏️</span>
+            <span>Edit</span>
+        </a>
+        <a href="{{ path('app_inventory_index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2">
+            <span>←</span>
+            <span>Back to Inventory</span>
+        </a>
+    </div>
+</div>
+
+<!-- STATUS ALERT -->
+{% if inventory.isOutOfStock() %}
+<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex items-center">
+        <span class="text-red-500 text-xl mr-3">🚫</span>
+        <div>
+            <h3 class="text-red-800 font-medium">Out of Stock</h3>
+            <p class="text-red-600 text-sm">This item is currently out of stock and needs immediate restocking.</p>
+        </div>
+    </div>
+</div>
+{% elseif inventory.isLowStock() %}
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+    <div class="flex items-center">
+        <span class="text-yellow-500 text-xl mr-3">⚠️</span>
+        <div>
+            <h3 class="text-yellow-800 font-medium">Low Stock Alert</h3>
+            <p class="text-yellow-600 text-sm">This item is running low and should be restocked soon.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if inventory.isExpired() %}
+<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex items-center">
+        <span class="text-red-500 text-xl mr-3">📅</span>
+        <div>
+            <h3 class="text-red-800 font-medium">Expired Item</h3>
+            <p class="text-red-600 text-sm">This item has passed its expiry date and should be removed from inventory.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- MAIN INFO -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- ITEM IMAGE -->
+        {% if inventory.imagePath %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Item Image</h3>
+            <div class="flex justify-center">
+                <img src="{{ asset('image/' ~ inventory.imagePath) }}" alt="{{ inventory.name }}" 
+                     class="max-w-full h-auto max-h-96 object-contain rounded-lg border border-gray-200 shadow-sm">
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- BASIC INFO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Basic Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Item Name</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.name }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Category</label>
+                    <p class="mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ inventory.category }}
+                        </span>
+                    </p>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-500">Description</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.description ?: 'No description provided' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Status</label>
+                    <p class="mt-1">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            {% if inventory.status == 'active' %}bg-green-100 text-green-800
+                            {% elseif inventory.status == 'inactive' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ inventory.status|title }}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Unit of Measurement</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.unit }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STOCK INFO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Stock Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">{{ inventory.currentStock }}</div>
+                    <div class="text-sm text-gray-500">Current Stock</div>
+                </div>
+                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div class="text-2xl font-bold text-yellow-600">{{ inventory.minimumStock }}</div>
+                    <div class="text-sm text-gray-500">Minimum Level</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600">{{ inventory.maximumStock }}</div>
+                    <div class="text-sm text-gray-500">Maximum Level</div>
+                </div>
+            </div>
+            
+            <!-- STOCK PROGRESS BAR-->
+            <div class="mt-4">
+                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                    <span>Stock Level</span>
+                    <span>{{ inventory.getStockPercentage()|round(1) }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="h-2 rounded-full {% if inventory.isLowStock() %}bg-yellow-500{% elseif inventory.isOutOfStock() %}bg-red-500{% else %}bg-green-500{% endif %}" 
+                         style="width: {{ inventory.getStockPercentage() }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRICING INFO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Pricing Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Unit Price</label>
+                    <p class="mt-1 text-lg font-semibold text-gray-900">₱{{ inventory.unitPrice|number_format(2, '.', ',') }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Total Value</label>
+                    <p class="mt-1 text-lg font-semibold text-green-600">₱{{ inventory.totalValue|number_format(2, '.', ',') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="space-y-6">
+        <!-- QUICK ACTIONS -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+                <!-- RESTOCK FORM -->
+                <form method="POST" action="{{ path('app_inventory_restock', {'id': inventory.id}) }}" class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Restock Item</label>
+                    <div class="flex space-x-2">
+                        <input type="number" name="quantity" min="1" placeholder="Qty" 
+                               class="flex-1 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]">
+                        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">
+                            Add
+                        </button>
+                    </div>
+                </form>
+
+                <!-- ADJUST STOCK FORM -->
+                <form method="POST" action="{{ path('app_inventory_adjust', {'id': inventory.id}) }}" class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Adjust Stock</label>
+                    <div class="space-y-2">
+                        <input type="number" name="quantity" placeholder="+/- Quantity" 
+                               class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]">
+                        <input type="text" name="reason" placeholder="Reason (optional)" 
+                               class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]">
+                        <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                            Adjust
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SUPPLIER INFO -->
+        {% if inventory.supplier %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Supplier Information</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Supplier</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.supplier }}</p>
+                </div>
+                {% if inventory.supplierContact %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Contact</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.supplierContact }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- DATE INFO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Date Information</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Created</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.createdAt|date('M d, Y H:i') }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Last Updated</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.updatedAt|date('M d, Y H:i') }}</p>
+                </div>
+                {% if inventory.lastRestocked %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Last Restocked</label>
+                    <p class="mt-1 text-sm text-gray-900">{{ inventory.lastRestocked|date('M d, Y') }}</p>
+                </div>
+                {% endif %}
+                {% if inventory.expiryDate %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-500">Expiry Date</label>
+                    <p class="mt-1 text-sm {% if inventory.isExpired() %}text-red-600 font-medium{% else %}text-gray-900{% endif %}">
+                        {{ inventory.expiryDate|date('M d, Y') }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- DELETE BUTTON -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-red-600 mb-4">Danger Zone</h3>
+            <form method="post" action="{{ path('app_inventory_delete', {'id': inventory.id}) }}" 
+                  onsubmit="return confirm('Are you sure you want to delete this inventory item? This action cannot be undone.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ inventory.id) }}">
+                <button type="submit" class="w-full bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">
+                    Delete Item
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

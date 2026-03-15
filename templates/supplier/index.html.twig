@@ -1,0 +1,140 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block admin_body %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Suppliers</h1>
+        <a href="{{ path('app_supplier_new') }}" class="bg-[#235A2F] text-white px-4 py-2 rounded-md hover:bg-green-700">Create new</a>
+    </div>
+
+    <!-- INSTANT FILTERS -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-100 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search Suppliers</label>
+                <input type="text" id="search-name" placeholder="Search by name..." 
+                       class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                <select id="filter-product" class="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#235A2F]">
+                    <option value="">All Products</option>
+                    {% for prod in products %}
+                        <option value="{{ prod.name }}">{{ prod.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <button id="clear-filters" class="w-full bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <table id="suppliers-table" class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                    <th class="px-6 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            {% for supplier in suppliers %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {% if supplier.imagePath %}
+                            <img src="{{ asset(supplier.imagePath) }}" alt="{{ supplier.name }}" class="w-12 h-12 object-cover rounded-md" />
+                        {% else %}
+                            <svg class="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" /></svg>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ supplier.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ supplier.contact ?? '—' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ supplier.product ?? '—' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ supplier.address ?? '—' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ supplier.createdBy ? supplier.createdBy.username : '-' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <a href="{{ path('app_supplier_show', {'id': supplier.id}) }}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-white hover:opacity-90">Show</a>
+                        <a href="{{ path('app_supplier_edit', {'id': supplier.id}) }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-white hover:opacity-90">Edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+function initializeSuppliersTable() {
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#suppliers-table')) {
+        $('#suppliers-table').DataTable().destroy();
+    }
+
+    const table = $('#suppliers-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>'
+    });
+
+    // Column indices: Name at 1, Product at 3, CreatedBy at 5
+    const COL_NAME = 1;
+    const COL_PRODUCT = 3;
+
+    // Filter by Product dropdown
+    $('#filter-product').off('change').on('change', function() {
+        table.column(COL_PRODUCT).search(this.value).draw();
+    });
+
+    // Search by Supplier Name with debouncing
+    let searchTimeout;
+    $('#search-name').off('keyup').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchValue = this.value;
+        searchTimeout = setTimeout(() => {
+            table.column(COL_NAME).search(searchValue).draw();
+        }, 300);
+    });
+
+    // Clear all filters
+    $('#clear-filters').off('click').on('click', function(e) {
+        e.preventDefault();
+        
+        $('#filter-product').val('').trigger('change');
+        $('#search-name').val('');
+        
+        table.search('').columns().search('').draw();
+    });
+}
+
+// Initialize on page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeSuppliersTable);
+document.addEventListener('turbo:load', initializeSuppliersTable);
+document.addEventListener('turbo:render', initializeSuppliersTable);
+</script>
+{% endblock %}

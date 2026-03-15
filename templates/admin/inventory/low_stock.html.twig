@@ -1,0 +1,58 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block admin_body %}
+<!-- HEADER -->
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">Low Stock Alerts</h1>
+        <p class="text-gray-600 mt-1">Items that need immediate attention</p>
+    </div>
+    <a href="{{ path('app_inventory_index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2">
+        <span>←</span>
+        <span>Back to Inventory</span>
+    </a>
+</div>
+
+<!-- OUT OF STOCK ITEMS -->
+{% if out_of_stock_items|length > 0 %}
+<div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold text-red-800 mb-4">🚫 Out of Stock Items ({{ out_of_stock_items|length }})</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for item in out_of_stock_items %}
+        <div class="bg-white rounded-lg p-4 border border-red-200">
+            <h3 class="font-semibold text-gray-800">{{ item.name }}</h3>
+            <p class="text-sm text-gray-600">{{ item.category }}</p>
+            <p class="text-red-600 font-medium">0 {{ item.unit }} remaining</p>
+            <a href="{{ path('app_inventory_show', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-800 text-sm">View Details →</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- LOW STOCKS ITEMS -->
+{% if low_stock_items|length > 0 %}
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold text-yellow-800 mb-4">⚠️ Low Stock Items ({{ low_stock_items|length }})</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for item in low_stock_items %}
+        <div class="bg-white rounded-lg p-4 border border-yellow-200">
+            <h3 class="font-semibold text-gray-800">{{ item.name }}</h3>
+            <p class="text-sm text-gray-600">{{ item.category }}</p>
+            <p class="text-yellow-600 font-medium">{{ item.currentStock }} {{ item.unit }} remaining (Min: {{ item.minimumStock }})</p>
+            <a href="{{ path('app_inventory_show', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-800 text-sm">View Details →</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- NO ALERTS -->
+{% if out_of_stock_items|length == 0 and low_stock_items|length == 0 %}
+<div class="bg-green-50 border border-green-200 rounded-lg p-8 text-center">
+    <div class="text-4xl mb-4">✅</div>
+    <h2 class="text-xl font-semibold text-green-800 mb-2">All Good!</h2>
+    <p class="text-green-600">No low stock or out of stock items at this time.</p>
+</div>
+{% endif %}
+{% endblock %}

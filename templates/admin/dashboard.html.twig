@@ -1,0 +1,879 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block admin_body %}
+<!-- KPI CARDS WIDGETS -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Total Revenue</div>
+                <div class="mt-2 text-3xl font-bold text-gray-800">₱{{ totalRevenue|number_format(2, '.', ',') }}</div>
+                <div class="mt-1 text-sm {{ revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                    {{ revenueGrowth >= 0 ? '+' : '' }}{{ revenueGrowth }}% vs last month
+                </div>
+            </div>
+            <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 text-xl">💰</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Active Bookings</div>
+                <div class="mt-2 text-3xl font-bold text-gray-800">{{ activeBookings }}</div>
+                <div class="mt-1 text-sm {{ bookingGrowth >= 0 ? 'text-blue-600' : 'text-red-600' }}">
+                    {{ bookingGrowth >= 0 ? '+' : '' }}{{ bookingGrowth }} this week
+                </div>
+            </div>
+            <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-xl">📅</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Pending Requests</div>
+                <div class="mt-2 text-3xl font-bold text-gray-800">{{ pendingRequests }}</div>
+                <div class="mt-1 text-sm text-orange-600">Requires attention</div>
+            </div>
+            <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <span class="text-orange-600 text-xl">⏳</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="text-gray-500 text-sm font-medium">Customer Rating</div>
+                <div class="mt-2 text-3xl font-bold text-gray-800">4.8</div>
+                <div class="mt-1 text-sm text-green-600">Excellent</div>
+            </div>
+            <div class="h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <span class="text-yellow-600 text-xl">⭐</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHARTS AND GRAPHS -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- REVENUE CHART WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Revenue Trend</h3>
+            <div class="flex space-x-2">
+                <button id="revenue-7d" class="period-btn px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors" data-period="7D">7D</button>
+                <button id="revenue-30d" class="period-btn px-3 py-1 text-xs bg-[#235A2F] text-white rounded-md transition-colors" data-period="30D">30D</button>
+                <button id="revenue-90d" class="period-btn px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors" data-period="90D">90D</button>
+            </div>
+        </div>
+        <div class="h-64">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- BOOKING TRENDS CHART WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Booking Trends</h3>
+            <select id="booking-period-select" class="text-sm border border-gray-200 rounded-md px-2 py-1">
+                <option value="7D">This Week</option>
+                <option value="30D" selected>This Month</option>
+                <option value="90D">This Quarter</option>
+            </select>
+        </div>
+        <div class="h-64">
+            <canvas id="bookingChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- SERVICES PERFORMANCE AND RECENT BOOKINGS -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- SERVICES PERFOMANCE WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Services</h3>
+        <div class="space-y-4">
+            {% for service in topServices %}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-12 w-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                        {% if service.image %}
+                            <img src="{{ asset('image/' ~ service.image) }}" alt="{{ service.name }}" class="h-full w-full object-cover">
+                        {% else %}
+                            <span class="text-gray-600 text-lg">
+                                {% if 'wedding' in service.name|lower %}
+                                    💒
+                                {% elseif 'corporate' in service.name|lower or 'business' in service.name|lower %}
+                                    🏢
+                                {% elseif 'birthday' in service.name|lower or 'party' in service.name|lower %}
+                                    🎉
+                                {% else %}
+                                    🍽️
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-800">{{ service.name }}</div>
+                        <div class="text-sm text-gray-500">{{ service.bookingCount }} bookings</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-semibold text-gray-800">₱{{ service.totalRevenue|number_format(2, '.', ',') }}</div>
+                    <div class="text-xs text-green-600">Base: ₱{{ service.basePrice|number_format(0, '.', ',') }}</div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if topServices|length == 0 %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">📊</div>
+                <div>No service data available</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RECENT BOOKINGS WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
+            <a href="{{ path('app_bookings_index') }}" class="text-sm text-[#235A2F] hover:underline">View all</a>
+        </div>
+        <div class="space-y-3">
+            {% for booking in recentBookings %}
+            <div class="flex items-center justify-between py-2 {{ loop.last ? '' : 'border-b border-gray-100' }}">
+                <div>
+                    <div class="font-medium text-gray-800">{{ booking.customerName }}</div>
+                    <div class="text-sm text-gray-500">{{ booking.service.name }} • {{ booking.eventDate|date('M d') }}</div>
+                    <div class="text-xs text-gray-400">{{ booking.guestCount }} guests • ₱{{ booking.totalPrice|number_format(2, '.', ',') }}</div>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full 
+                    {% if booking.status == 'confirmed' %}bg-green-100 text-green-800
+                    {% elseif booking.status == 'pending' %}bg-yellow-100 text-yellow-800
+                    {% elseif booking.status == 'processing' %}bg-blue-100 text-blue-800
+                    {% elseif booking.status == 'completed' %}bg-gray-100 text-gray-800
+                    {% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ booking.status|title }}
+                </span>
+    </div>
+            {% endfor %}
+            
+            {% if recentBookings|length == 0 %}
+            <div class="text-center py-8 text-gray-500">
+                <div class="text-4xl mb-2">📅</div>
+                <div>No recent bookings</div>
+    </div>
+            {% endif %}
+    </div>
+</div>
+
+    <!-- CUSTOMER SATISFACTION WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Customer Satisfaction</h3>
+        <div class="space-y-4">
+        <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Overall Rating</span>
+                <div class="flex items-center space-x-1">
+                    <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                    <span class="text-sm font-medium text-gray-800">4.8</span>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Food Quality</span>
+                    <span class="font-medium text-gray-800">4.9</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 98%"></div>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Service</span>
+                    <span class="font-medium text-gray-800">4.7</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 94%"></div>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">Ambiance</span>
+                    <span class="font-medium text-gray-800">4.8</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 96%"></div>
+                </div>
+            </div>
+            
+            <div class="pt-2 border-t border-gray-100">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-800">127</div>
+                    <div class="text-sm text-gray-500">Reviews this month</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QUICK ACTIONS AND ALERTS -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- QUICK ACTION WIDGETS -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <a href="{{ path('app_bookings_new') }}" class="flex items-center justify-center space-x-2 p-3 bg-[#235A2F] text-white rounded-lg hover:bg-green-700 transition-colors">
+                <span>📅</span>
+                <span class="text-sm font-medium">New Booking</span>
+            </a>
+            <a href="{{ path('app_services_new') }}" class="flex items-center justify-center space-x-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <span>🍽️</span>
+                <span class="text-sm font-medium">Add Service</span>
+            </a>
+            <a href="{{ path('app_admin_dashboard') }}" class="flex items-center justify-center space-x-2 p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                <span>📊</span>
+                <span class="text-sm font-medium">Reports</span>
+            </a>
+            <a href="{{ path('app_inventory_index') }}" class="flex items-center justify-center space-x-2 p-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                <span>📦</span>
+                <span class="text-sm font-medium">Inventory</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- SYSTEM ALERTS WIDGET -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">System Alerts</h3>
+        <div class="space-y-3">
+            <div class="flex items-start space-x-3 p-3 bg-red-50 rounded-lg">
+                <span class="text-red-500 text-lg">⚠️</span>
+                <div>
+                    <div class="font-medium text-red-800">Low Inventory Alert</div>
+                    <div class="text-sm text-red-600">Chicken breast stock is running low (15% remaining)</div>
+                </div>
+        </div>
+            
+            <div class="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
+                <span class="text-yellow-500 text-lg">📬</span>
+                <div>
+                    <div class="font-medium text-yellow-800">New Booking Requests</div>
+                    <div class="text-sm text-yellow-600">3 pending booking requests require your attention</div>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                <span class="text-green-500 text-lg">✅</span>
+                <div>
+                    <div class="font-medium text-green-800">Payment Received</div>
+                    <div class="text-sm text-green-600">Invoice INV-1023 has been paid successfully</div>
+                </div>
+                </div>
+            
+            <div class="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                <span class="text-blue-500 text-lg">📈</span>
+                <div>
+                    <div class="font-medium text-blue-800">Performance Update</div>
+                    <div class="text-sm text-blue-600">Revenue increased by 18.2% this month</div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Use window object to store chart instances to avoid redeclaration issues
+if (!window.dashboardCharts) {
+    window.dashboardCharts = {
+        revenueChart: null,
+        bookingChart: null,
+        pendingRequests: new Set()
+    };
+}
+
+// Function to initialize charts
+function initializeDashboardCharts() {
+    // Destroy existing charts if they exist
+    if (window.dashboardCharts.revenueChart) {
+        window.dashboardCharts.revenueChart.destroy();
+        window.dashboardCharts.revenueChart = null;
+    }
+    if (window.dashboardCharts.bookingChart) {
+        window.dashboardCharts.bookingChart.destroy();
+        window.dashboardCharts.bookingChart = null;
+    }
+
+    // CHECK IF CANVAS ELEMENTS EXIST
+    const revenueCanvas = document.getElementById('revenueChart');
+    const bookingCanvas = document.getElementById('bookingChart');
+
+    if (!revenueCanvas || !bookingCanvas) {
+        console.log('Canvas elements not found, retrying in 100ms...');
+        setTimeout(initializeDashboardCharts, 100);
+        return;
+    }
+
+    // REVENUE CHART
+    const revenueCtx = revenueCanvas.getContext('2d');
+    const revenueData = {{ monthlyRevenue|json_encode|raw }};
+    
+    // Debug: Log the revenue data
+    console.log('Revenue data from server:', revenueData);
+    
+    // Get last 7 days for labels 
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        last7Days.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+    }
+    
+    console.log('Revenue chart labels:', last7Days);
+    console.log('Revenue chart data:', revenueData);
+    
+    window.dashboardCharts.revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: last7Days,
+            datasets: [{
+                label: 'Revenue (₱)',
+                data: revenueData,
+                borderColor: '#235A2F',
+                backgroundColor: 'rgba(35, 90, 47, 0.15)',
+                borderWidth: 4,
+                pointBackgroundColor: '#235A2F',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                fill: true,
+                tension: 0.4,
+                spanGaps: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart',
+                delay: (context) => {
+                    return context.dataIndex * 200;
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#235A2F',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Revenue: ₱' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#6b7280',
+                        callback: function(value) {
+                            return '₱' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#6b7280'
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    borderJoinStyle: 'round',
+                    borderCapStyle: 'round'
+                }
+            }
+        }
+    });
+
+    // BOOKING TRENDS CHART
+    const bookingCtx = bookingCanvas.getContext('2d');
+    const bookingData = {{ weeklyBookings|json_encode|raw }};
+    
+    // Debug: Log the booking data
+    console.log('Booking data from server:', bookingData);
+    
+    // Use the same last 7 days labels as revenue chart
+    console.log('Booking chart labels:', last7Days);
+    console.log('Booking chart data:', bookingData);
+    
+    window.dashboardCharts.bookingChart = new Chart(bookingCtx, {
+        type: 'bar',
+        data: {
+            labels: last7Days,
+            datasets: [{
+                label: 'Bookings',
+                data: bookingData,
+                backgroundColor: [
+                    '#235A2F',
+                    '#235A2F',
+                    '#235A2F',
+                    '#235A2F',
+                    '#235A2F',
+                    '#ED1C24',
+                    '#235A2F'
+                ],
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    console.log('Dashboard charts initialized successfully');
+}
+
+// TURBO-COMPATIBLE INITIALIZATION
+document.addEventListener('turbo:load', function() {
+    console.log('Turbo load event, initializing dashboard charts...');
+    initializeDashboardCharts();
+});
+
+// FALLBACK FOR NON-TURBO NAVIGATION
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing dashboard charts...');
+    initializeDashboardCharts();
+});
+
+// INITIALIZE CHARTS WHEN THE PAGE BECOMES VISIBLE
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        console.log('Page became visible, reinitializing dashboard charts...');
+        setTimeout(initializeDashboardCharts, 100);
+    }
+});
+
+// INITIALIZE CHARTS WHEN THE WINDOW IS FOCUSED
+window.addEventListener('focus', function() {
+    console.log('Window focused, reinitializing dashboard charts...');
+    setTimeout(initializeDashboardCharts, 100);
+});
+
+// CLEANUP FUCNTION FOR TURBO NAVIGATION
+document.addEventListener('turbo:before-cache', function() {
+    console.log('Turbo before cache, cleaning up dashboard charts and buttons...');
+    
+    // CLEAN UP CHARTS
+    if (window.dashboardCharts.revenueChart) {
+        window.dashboardCharts.revenueChart.destroy();
+        window.dashboardCharts.revenueChart = null;
+    }
+    if (window.dashboardCharts.bookingChart) {
+        window.dashboardCharts.bookingChart.destroy();
+        window.dashboardCharts.bookingChart = null;
+    }
+    
+    // CLEAN UP BUTTON EVENT LISTENERS
+    const periodButtons = document.querySelectorAll('.period-btn');
+    periodButtons.forEach(button => {
+        // REMOVE EVENT LISTENERS BY CLONING 
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    console.log('Cleanup completed');
+});
+
+// FALLBACK: INITIALIZE CHARTS AFTER A SHORT DELAY
+setTimeout(function() {
+    if (!window.dashboardCharts.revenueChart || !window.dashboardCharts.bookingChart) {
+        console.log('Fallback: Initializing dashboard charts after delay...');
+        initializeDashboardCharts();
+    }
+}, 500);
+
+// INITIALIZE BOOKING PERIOD SELECTOR 
+document.addEventListener('turbo:load', function() {
+    console.log('Turbo load event, initializing booking period selector...');
+    initializeBookingPeriodSelector();
+});
+
+// FALLBACK FOR NON-TURBO NAVIGATION
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing booking period selector...');
+    initializeBookingPeriodSelector();
+});
+
+function initializeBookingPeriodSelector() {
+    const bookingPeriodSelect = document.getElementById('booking-period-select');
+    
+    if (!bookingPeriodSelect) {
+        console.log('Booking period selector not found');
+        return;
+    }
+    
+    // REMOVE ANY EXISTING EVENT LISTENERS BY CLONING 
+    const newSelect = bookingPeriodSelect.cloneNode(true);
+    bookingPeriodSelect.parentNode.replaceChild(newSelect, bookingPeriodSelect);
+    
+    // ADD EVENT LISTENER FOR PERIOD CHANGE
+    newSelect.addEventListener('change', function() {
+        const period = this.value;
+        console.log('Booking period changed to:', period);
+        
+        // UPDATE BOOKING CHART WITH NEW DATA
+        updateBookingChartData(period);
+    });
+    
+    console.log('Booking period selector initialized');
+}
+
+async function updateBookingChartData(period) {
+    const canvas = document.getElementById('bookingChart');
+    if (!canvas) {
+        console.log('Booking chart canvas not found');
+        return;
+    }
+    
+    try {
+        // SHOW LOADING STATE
+        canvas.style.opacity = '0.5';
+        
+        console.log('Fetching booking data for period:', period);
+        
+        // FETCH NEW DATA
+        const response = await fetch(`/admin/dashboard/chart-data?period=${period}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Fetched booking data:', data);
+        
+        if (data.success === false) {
+            throw new Error(data.message || 'Server returned error');
+        }
+        
+        // UDATE THE BOOKING CHART
+        updateBookingChart(data);
+        
+        // HIDE LOADING STATE
+        canvas.style.opacity = '1';
+        
+    } catch (error) {
+        console.error('Error fetching booking chart data:', error);
+        
+        // SHOW ERROR MESSAGE 
+        showChartError('booking', error.message);
+        
+        // HIDE LOADING STATE 
+        canvas.style.opacity = '1';
+    }
+}
+
+// INTERACTIVE PERIOD BUTTONS FUNCTIONALITY - TURBO COMPATIBLE
+document.addEventListener('turbo:load', function() {
+    console.log('Turbo load event, initializing period buttons...');
+    initializePeriodButtons();
+});
+
+// FALLBACK FOR NON-TURBO NAVIGATION
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing period buttons...');
+    initializePeriodButtons();
+});
+
+function initializePeriodButtons() {
+    const periodButtons = document.querySelectorAll('.period-btn');
+    
+    console.log(`Found ${periodButtons.length} period buttons to initialize`);
+    
+    periodButtons.forEach(button => {
+        // REMOVE ANY EXISTING EVENT LISTENERS BY CLONING THE ELEMENT
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        // ADD FRESH EVENT LISTENER
+        newButton.addEventListener('click', function() {
+            const period = this.getAttribute('data-period');
+            const chartType = this.id.startsWith('revenue') ? 'revenue' : 'booking';
+            
+            console.log(`Period button clicked: ${period} for ${chartType} chart`);
+            
+            // UPDATE BUTTON STATES
+            updateButtonStates(this);
+            
+            // FETCH NEW DATA AND UPDATE CHART
+            updateChartData(chartType, period);
+        });
+        
+        console.log(`Initialized button: ${newButton.id} with period ${newButton.getAttribute('data-period')}`);
+    });
+}
+
+function updateButtonStates(activeButton) {
+    const allButtons = document.querySelectorAll('.period-btn');
+    
+    allButtons.forEach(button => {
+        button.classList.remove('bg-[#235A2F]', 'text-white');
+        button.classList.add('bg-gray-100', 'text-gray-600');
+    });
+    
+    activeButton.classList.remove('bg-gray-100', 'text-gray-600');
+    activeButton.classList.add('bg-[#235A2F]', 'text-white');
+}
+
+async function updateChartData(chartType, period) {
+    let canvas = null;
+    const requestKey = `${chartType}-${period}`;
+    
+    // PREVENT DUPLICATE REQUESTS
+    if (window.dashboardCharts.pendingRequests.has(requestKey)) {
+        console.log(`Request for ${requestKey} already pending, skipping...`);
+        return;
+    }
+    
+    try {
+        // ADD TO PENDING REQUESTS
+        window.dashboardCharts.pendingRequests.add(requestKey);
+        
+        // SHOW LOADING STATE - WITH NULL CHECK
+        canvas = document.getElementById(chartType + 'Chart');
+        if (canvas && canvas.style) {
+            canvas.style.opacity = '0.5';
+        }
+        
+        console.log(`Fetching data for ${chartType} chart with period ${period}`);
+        
+        // FETCH NEW DATA
+        const response = await fetch(`/admin/dashboard/chart-data?period=${period}`);
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        console.log('Raw response:', text);
+        
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Response text:', text);
+            throw new Error('Invalid JSON response');
+        }
+        
+        console.log(`Fetched data for ${period}:`, data);
+        
+        if (data.success === false) {
+            throw new Error(data.message || 'Server returned error');
+        }
+        
+        // CHECK IF CANVAS STILL EXISTS BEFORE UPDATING CHART
+        canvas = document.getElementById(chartType + 'Chart');
+        if (!canvas) {
+            console.warn(`Canvas ${chartType}Chart not found, skipping chart update`);
+            return;
+        }
+        
+        // UPDATE THE APPROPRIATE CHART
+        if (chartType === 'revenue') {
+            updateRevenueChart(data);
+        } else if (chartType === 'booking') {
+            updateBookingChart(data);
+        }
+        
+        // HIDE LOADING STATE - WITH NULL CHECK
+        if (canvas && canvas.style) {
+            canvas.style.opacity = '1';
+        }
+        
+    } catch (error) {
+        console.error('Error fetching chart data:', error);
+        console.error('Error details:', error.message);
+        
+        // SHOW ERROR MESSAGE TO USER
+        showChartError(chartType, error.message);
+        
+        // HIDE LOADING STATE - WITH NULL CHECK
+        canvas = document.getElementById(chartType + 'Chart');
+        if (canvas && canvas.style) {
+            canvas.style.opacity = '1';
+        }
+    } finally {
+        // ALWAYS REMOVE FROM PENDING REQUESTS
+        window.dashboardCharts.pendingRequests.delete(requestKey);
+    }
+}
+
+function showChartError(chartType, message) {
+    const canvas = document.getElementById(chartType + 'Chart');
+    if (canvas && canvas.parentNode) {
+        // CREATE ERROR MESSAGE
+        let errorDiv = canvas.parentNode.querySelector('.chart-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'chart-error absolute inset-0 flex items-center justify-center bg-red-50 text-red-600 text-sm';
+            canvas.parentNode.style.position = 'relative';
+            canvas.parentNode.appendChild(errorDiv);
+        }
+        errorDiv.textContent = `Error: ${message}`;
+        errorDiv.style.display = 'flex';
+        
+        // HIDE ERROR AFTER 5 SECONDS
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+}
+
+function updateRevenueChart(data) {
+    // CHECK IF CHART EXISTS AND CANVAS STILL EXISTS
+    if (!window.dashboardCharts.revenueChart) {
+        console.log('Revenue chart not found, cannot update');
+        return;
+    }
+    
+    const canvas = document.getElementById('revenueChart');
+    if (!canvas) {
+        console.log('Revenue chart canvas not found, cannot update');
+        return;
+    }
+    
+    try {
+        // GENERATE APPROPRIATE LABELS BASED ON PERIOD
+        let labels = [];
+        if (data.period === '7D') {
+            // LAST 7 DAYS
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+            }
+        } else if (data.period === '30D') {
+            // LAST 4 WEEKS
+            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        } else if (data.period === '90D') {
+            // LAST 3 MONTHS
+            labels = ['Month 1', 'Month 2', 'Month 3'];
+        }
+        
+        // UPDATE CHART DATA
+        window.dashboardCharts.revenueChart.data.labels = labels;
+        window.dashboardCharts.revenueChart.data.datasets[0].data = data.revenue;
+        
+        // UPDATE CHART
+        window.dashboardCharts.revenueChart.update('active');
+        
+        console.log('Revenue chart updated with new data for period:', data.period);
+    } catch (error) {
+        console.error('Error updating revenue chart:', error);
+    }
+}
+
+function updateBookingChart(data) {
+    // CHECK IF CHART EXISTS AND CANVAS STILL EXISTS
+    if (!window.dashboardCharts.bookingChart) {
+        console.log('Booking chart not found, cannot update');
+        return;
+    }
+    
+    const canvas = document.getElementById('bookingChart');
+    if (!canvas) {
+        console.log('Booking chart canvas not found, cannot update');
+        return;
+    }
+    
+    try {
+        // GENERATE APPROPRIATE LABELS BASED ON PERIOD
+        let labels = [];
+        if (data.period === '7D') {
+            // LAST 7 DAYS
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+            }
+        } else if (data.period === '30D') {
+            // LAST 4 WEEKS
+            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        } else if (data.period === '90D') {
+            // LAST 3 MONTHS
+            labels = ['Month 1', 'Month 2', 'Month 3'];
+        }
+        
+        //  UPDATE CHART DATA
+        window.dashboardCharts.bookingChart.data.labels = labels;
+        window.dashboardCharts.bookingChart.data.datasets[0].data = data.bookings;
+        
+        // UPDATE CHART
+        window.dashboardCharts.bookingChart.update('active');
+        
+        console.log('Booking chart updated with new data for period:', data.period);
+    } catch (error) {
+        console.error('Error updating booking chart:', error);
+    }
+}
+</script>
+{% endblock %}
+
+

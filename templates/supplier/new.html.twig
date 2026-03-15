@@ -1,0 +1,15 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}New Supplier{% endblock %}
+
+{% block admin_body %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-4">Create new Supplier</h1>
+        {{ include('supplier/_form.html.twig') }}
+        <div class="mt-4">
+            <a href="{{ path('app_supplier_index') }}" class="text-sm text-gray-600 hover:underline">← Back to list</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

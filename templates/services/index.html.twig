@@ -1,0 +1,162 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Services index{% endblock %}
+
+{% block admin_body %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-semibold text-gray-800">Services</h1>
+        <a href="{{ path('app_services_new') }}" class="inline-flex items-center rounded-md bg-[#235A2F] px-4 py-2 text-white hover:opacity-90">Create new</a>
+    </div>
+
+    <!-- SEARCH AND FILTER -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Service Name Search -->
+                <div>
+                    <label for="search-name" class="block text-sm font-medium text-gray-700">Service Name</label>
+                    <input 
+                        type="text" 
+                        id="search-name" 
+                        placeholder="Search by name..."
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]"
+                    >
+                </div>
+
+                <!-- Event Type Filter -->
+                <div>
+                    <label for="filter-event-type" class="block text-sm font-medium text-gray-700">Event Type</label>
+                    <select id="filter-event-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#235A2F] focus:ring-[#235A2F]">
+                        <option value="">All Types</option>
+                        {% for type in event_types %}
+                            <option value="{{ type }}">{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="clear-filters" class="inline-flex items-center rounded-md bg-gray-400 px-4 py-2 text-white hover:opacity-90">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table id="services-table" class="min-w-full table-auto text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-medium">Image</th>
+                        <th class="px-4 py-3 text-left font-medium">Name</th>
+                        <th class="px-4 py-3 text-left font-medium">Description</th>
+                        <th class="px-4 py-3 text-left font-medium">EventType</th>
+                        <th class="px-4 py-3 text-left font-medium">BasePrice</th>
+                        <th class="px-4 py-3 text-left font-medium">MinGuests</th>
+                        <th class="px-4 py-3 text-left font-medium">MaxGuests</th>
+                        <th class="px-4 py-3 text-left font-medium">CreatedAt</th>
+                        <th class="px-4 py-3 text-left font-medium">UpdatedAt</th>
+                        <th class="px-4 py-3 text-left font-medium">Created By</th>
+                        <th class="px-4 py-3 text-left font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-800">
+                {% for service in services %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">
+                            {% if service.image %}
+                                <img src="{{ asset('image/' ~ service.image) }}" alt="{{ service.name }}" class="h-12 w-12 object-cover rounded-md">
+                            {% else %}
+                                <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                    <span class="text-gray-400 text-xs">No image</span>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">{{ service.name }}</td>
+                        <td class="px-4 py-3">{{ service.description }}</td>
+                        <td class="px-4 py-3">{{ service.eventType }}</td>
+                        <td class="px-4 py-3">₱{{ service.basePrice|number_format(2, '.', ',') }}</td>
+                        <td class="px-4 py-3">{{ service.minGuests }}</td>
+                        <td class="px-4 py-3">{{ service.maxGuests }}</td>
+                        <td class="px-4 py-3">{{ service.createdAt ? service.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                        <td class="px-4 py-3">{{ service.updatedAt ? service.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                        <td class="px-4 py-3">{{ service.createdBy ? service.createdBy.username : '-' }}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                <a href="{{ path('app_services_show', {'id': service.id}) }}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-white hover:opacity-90">Show</a>
+                                <a href="{{ path('app_services_edit', {'id': service.id}) }}" class="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-white hover:opacity-90">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="11" class="px-4 py-6 text-center text-gray-500">No records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script>
+function initializeServicesTable() {
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#services-table')) {
+        $('#services-table').DataTable().destroy();
+    }
+
+    const table = $('#services-table').DataTable({
+        responsive: true,
+        pageLength: 25,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        paging: true,
+        dom: '<"top"lf>rt<"bottom"ip>'
+    });
+
+    // Column indices: Name at 1, EventType at 3
+    const COL_NAME = 1;
+    const COL_EVENT_TYPE = 3;
+
+    // Filter by Event Type dropdown
+    $('#filter-event-type').off('change').on('change', function() {
+        table.column(COL_EVENT_TYPE).search(this.value).draw();
+    });
+
+    // Search by Service Name with debouncing
+    let searchTimeout;
+    $('#search-name').off('keyup').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        const searchValue = this.value;
+        searchTimeout = setTimeout(() => {
+            table.column(COL_NAME).search(searchValue).draw();
+        }, 300);
+    });
+
+    // Clear all filters
+    $('#clear-filters').off('click').on('click', function(e) {
+        e.preventDefault();
+        
+        $('#filter-event-type').val('').trigger('change');
+        $('#search-name').val('');
+        
+        table.search('').columns().search('').draw();
+    });
+}
+
+// Initialize on page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeServicesTable);
+document.addEventListener('turbo:load', initializeServicesTable);
+document.addEventListener('turbo:render', initializeServicesTable);
+</script>
+{% endblock %}

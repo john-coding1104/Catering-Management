@@ -1,0 +1,79 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block admin_body %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">My Profile</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Account Information</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Username</label>
+                    <p class="text-gray-900 mt-1">{{ user.username }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Email</label>
+                    <p class="text-gray-900 mt-1">{{ user.email }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Roles</label>
+                    <div class="mt-1 space-x-1">
+                        {% for role in user.roles %}
+                            {% if role != 'ROLE_USER' %}
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                {{ role == 'ROLE_ADMIN' ? 'Admin' : 'Staff' }}
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Account Status</label>
+                    <p class="mt-1">
+                        <span class="inline-block {% if user.status == 'active' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} text-xs px-2 py-1 rounded">
+                            {{ user.status|capitalize }}
+                        </span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Account Created</label>
+                    <p class="text-gray-900 mt-1">{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : 'N/A' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Last Updated</label>
+                    <p class="text-gray-900 mt-1">{{ user.updatedAt ? user.updatedAt|date('Y-m-d H:i:s') : 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+            
+            <div class="space-y-3">
+                <a href="{{ path('app_profile_edit') }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Edit Profile Information
+                </a>
+
+                <a href="{{ path('app_profile_change_password') }}" class="block w-full text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Change Password
+                </a>
+
+                <a href="{{ path('app_logout') }}" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
