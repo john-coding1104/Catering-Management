@@ -1,0 +1,163 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Home - Every Event | Premium Catering & Events{% endblock %}
+
+{% block body %}
+    <!-- ========== HERO SECTION ========== -->
+    <section class="pt-32 pb-20 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="fade-in-up">
+                    <h1 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                        Every Event<br> A Taste of Every <br>Occasion
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        Every Event offers an elegant fine dining experience, blending Filipino flavors with modern culinary techniques. From succulent lechon belly to gourmet seafood sinigang, each dish is beautifully plated and made with fresh, high-quality ingredients.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="{{ path('app_menus') }}" class="cta-button">Our Menu</a>
+                        <a href="{{ path('app_about') }}" class="cta-button" style="background-color: transparent; color: #d97066; border: 2px solid #d97066;">Learn More</a>
+                    </div>
+                    
+                    <!-- Social Icons -->
+                    <div class="flex items-center gap-6 mt-12">
+                        <a href="#" class="text-gray-400 hover:text-gray-600 transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-600 transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-5.031 1.378c-3.055 2.364-4.659 5.59-3.577 8.756 1.143 3.561 4.243 5.956 7.978 5.956 2.488 0 4.822-.977 6.537-2.765.518-.507.981-1.074 1.382-1.701.399-.622.647-1.252.801-1.901.172-.774.22-1.589.067-2.396-.341-1.825-1.555-3.360-3.31-4.169-.422-.200-.86-.381-1.311-.528.588-.401 1.144-.854 1.654-1.338 2.237-2.176 3.276-5.230 2.513-8.175C19.322.75 15.193-1.244 10.332 1.039c-.779.463-1.434 1.034-1.97 1.678-.535.64-.922 1.378-1.152 2.128-.114.384-.189.839-.215 1.335z"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-600 transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Image -->
+                <div class="image-hover-zoom h-96 lg:h-screen relative">
+                    <img src="/images/image.png" alt="Fine Dining Catering Setup" class="w-full h-full object-cover rounded-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ========== QUICK PREVIEW SECTIONS ========== -->
+    
+    <!-- Quick About Preview -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 fade-in-up">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose Every Event?</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                    Experience elegance, quality, and unforgettable moments with our premium catering services.
+                </p>
+                <a href="{{ path('app_about') }}" class="cta-button">Read Our Story</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Quick Services Preview -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-gray-900 mb-12 text-center fade-in-up">Our Services</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="service-card bg-gray-50 p-8 rounded-lg fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Weddings</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Create unforgettable moments with our premium wedding catering.</p>
+                    <a href="{{ path('app_services') }}" class="text-red-400 hover:text-red-600 font-medium">Learn More →</a>
+                </div>
+                
+                <div class="service-card bg-gray-50 p-8 rounded-lg fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Corporate Events</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Professional catering for conferences and celebrations.</p>
+                    <a href="{{ path('app_services') }}" class="text-red-400 hover:text-red-600 font-medium">Learn More →</a>
+                </div>
+                
+                <div class="service-card bg-gray-50 p-8 rounded-lg fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Private Parties</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">Intimate celebrations with personalized menus.</p>
+                    <a href="{{ path('app_services') }}" class="text-red-400 hover:text-red-600 font-medium">Learn More →</a>
+                </div>
+            </div>
+            
+            <div class="text-center fade-in-up">
+                <a href="{{ path('app_services') }}" class="cta-button">View All Services</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Quick Menu Preview -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-gray-900 mb-12 text-center fade-in-up">Featured Dishes</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="menu-item group cursor-pointer fade-in-up">
+                    <img src="/images/lechonbelly.jpg" alt="Lechon Belly">
+                    <div class="menu-overlay">
+                        <h4 class="text-white text-lg font-bold">Lechon Belly</h4>
+                        <p class="text-gray-200 text-sm">Roasted pork perfection</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item group cursor-pointer fade-in-up">
+                    <img src="/images/seafoods.jpg" alt="Seafood Sinigang">
+                    <div class="menu-overlay">
+                        <h4 class="text-white text-lg font-bold">Seafood Sinigang</h4>
+                        <p class="text-gray-200 text-sm">Gourmet tamarind stew</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item group cursor-pointer fade-in-up">
+                    <img src="/images/lecheflan.jpg" alt="Leche Flan">
+                    <div class="menu-overlay">
+                        <h4 class="text-white text-lg font-bold">Leche Flan</h4>
+                        <p class="text-gray-200 text-sm">Golden custard delight</p>
+                    </div>
+                </div>
+                
+                <div class="menu-item group cursor-pointer fade-in-up">
+                    <img src="/images/griledfish.jpg" alt="Grilled Fish">
+                    <div class="menu-overlay">
+                        <h4 class="text-white text-lg font-bold">Grilled Catch</h4>
+                        <p class="text-gray-200 text-sm">Fresh daily selection</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center fade-in-up">
+                <a href="{{ path('app_menus') }}" class="cta-button">Explore Full Menu</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-16 bg-red-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center fade-in-up">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Ready to Make Your Event Special?</h2>
+                <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Get in touch with us today to discuss your catering needs and create an unforgettable experience.
+                </p>
+                <a href="{{ path('app_contact') }}" class="cta-button">Contact Us Today</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

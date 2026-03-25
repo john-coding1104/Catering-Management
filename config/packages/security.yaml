@@ -58,6 +58,7 @@ security:
         # Admin-only routes
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/users, roles: ROLE_ADMIN }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }
         - { path: ^/activity-logs, roles: ROLE_ADMIN }
         - { path: ^/bookings, roles: ["ROLE_ADMIN", "ROLE_STAFF"] }
         - { path: ^/services, roles: ["ROLE_ADMIN", "ROLE_STAFF"] }

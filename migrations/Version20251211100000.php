@@ -20,7 +20,7 @@ final class Version20251211100000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Create the service_inventory table
-        $this->addSql('CREATE TABLE service_inventory (id INT AUTO_INCREMENT NOT NULL, service_id INT NOT NULL, inventory_id INT NOT NULL, quantity_used DOUBLE PRECISION NOT NULL, added_at DATETIME DEFAULT NULL, INDEX IDX_5F5D34F4ED5CA94B (service_id), INDEX IDX_5F5D34F49EEA759 (inventory_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE IF NOT EXISTS service_inventory (id INT AUTO_INCREMENT NOT NULL, service_id INT NOT NULL, inventory_id INT NOT NULL, quantity_used DOUBLE PRECISION NOT NULL, added_at DATETIME DEFAULT NULL, INDEX IDX_5F5D34F4ED5CA94B (service_id), INDEX IDX_5F5D34F49EEA759 (inventory_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE service_inventory ADD CONSTRAINT FK_5F5D34F4ED5CA94B FOREIGN KEY (service_id) REFERENCES services (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE service_inventory ADD CONSTRAINT FK_5F5D34F49EEA759 FOREIGN KEY (inventory_id) REFERENCES inventory (id) ON DELETE CASCADE');
     }

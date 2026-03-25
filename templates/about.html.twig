@@ -1,0 +1,114 @@
+{% extends "base.html.twig" %}
+
+{% block title %}About Us - Every Event | Premium Catering & Events{% endblock %}
+
+{% block body %}
+    <!-- ========== HERO BREADCRUMB ========== -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold text-gray-900">About Us</h1>
+            <p class="text-gray-600 mt-2">Learn more about Every Event and our commitment to excellence</p>
+        </div>
+    </section>
+    
+    <!-- ========== ABOUT SECTION ========== -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Image -->
+                <div class="image-hover-zoom h-96 lg:h-full order-2 lg:order-1 fade-in-up">
+                    <img src="/images/aboutUs.png" alt="Catering Table Setup" class="w-full h-full object-cover rounded-lg">
+                </div>
+                
+                <!-- Right Content -->
+                <div class="fade-in-up order-1 lg:order-2">
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                        Fine Dining with<br>Every Event
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-4 leading-relaxed">
+                        <span class="font-semibold">Premium Catering Experience</span>
+                    </p>
+                    <p class="text-base text-gray-600 mb-4 leading-relaxed">
+                        Every Event brings an elegant fine dining experience with a Filipino touch, offering carefully curated dishes made from high-quality, fresh ingredients.
+                    </p>
+                    <p class="text-base text-gray-600 mb-4 leading-relaxed">
+                        Every meal is thoughtfully prepared, blending traditional Filipino flavors with modern culinary techniques to create a luxurious dining experience.
+                    </p>
+                    <p class="text-base text-gray-600 mb-4 leading-relaxed">
+                        Guests can expect beautifully plated dishes, impeccable service, and a well-crafted menu featuring classic Filipino favorites with a refined twist—from succulent lechon belly to gourmet seafood sinigang and elevated desserts like golden leche flan.
+                    </p>
+                    <p class="text-base text-gray-600 mb-8 leading-relaxed">
+                        Whether for weddings, corporate events, or private celebrations, Every Event ensures a seamless and sophisticated dining experience, making every occasion truly memorable.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="{{ path('app_menus') }}" class="cta-button">View Our Menu</a>
+                        <a href="{{ path('app_contact') }}" class="cta-button" style="background-color: transparent; color: #d97066; border: 2px solid #d97066;">Get in Touch</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ========== VALUES SECTION ========== -->
+    <section class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="text-5xl font-bold text-gray-900 mb-4">Our Values</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    What drives us to deliver exceptional catering experiences
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow-sm service-card fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Quality</h3>
+                    <p class="text-gray-600">
+                        We source only the finest, freshest ingredients to ensure every dish meets our highest standards of excellence.
+                    </p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-lg shadow-sm service-card fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Customization</h3>
+                    <p class="text-gray-600">
+                        Every event is unique. We tailor our menus and services to match your vision and preferences perfectly.
+                    </p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-lg shadow-sm service-card fade-in-up">
+                    <div class="mb-6 w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Exceptional Service</h3>
+                    <p class="text-gray-600">
+                        Our dedicated team ensures seamless execution and unforgettable moments for your special occasion.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ========== CTA SECTION ========== -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-r from-red-400 to-red-600 rounded-lg p-12 text-center fade-in-up">
+                <h2 class="text-4xl font-bold text-white mb-6">Let's Create Something Memorable</h2>
+                <p class="text-white text-lg mb-8 opacity-90">
+                    Ready to experience Every Event's premium catering services?
+                </p>
+                <a href="{{ path('app_contact') }}" class="cta-button" style="background-color: white; color: #d97066;">Contact Us Today</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

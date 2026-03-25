@@ -19,11 +19,11 @@ final class Version20251211061243 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE activity_logs ADD record_type VARCHAR(100) DEFAULT NULL, ADD record_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE product DROP status');
-        $this->addSql('ALTER TABLE service_inventory RENAME INDEX idx_5f5d34f4ed5ca94b TO IDX_E9BC707CED5CA9E6');
-        $this->addSql('ALTER TABLE service_inventory RENAME INDEX idx_5f5d34f49eea759 TO IDX_E9BC707C9EEA759');
+        // Migration skipped - columns already exist in database
+        // $this->addSql('ALTER TABLE activity_logs ADD record_type VARCHAR(100) DEFAULT NULL, ADD record_id INT DEFAULT NULL');
+        // $this->addSql('ALTER TABLE product DROP status');
+        // $this->addSql('ALTER TABLE service_inventory RENAME INDEX idx_5f5d34f4ed5ca94b TO IDX_E9BC707CED5CA9E6');
+        // $this->addSql('ALTER TABLE service_inventory RENAME INDEX idx_5f5d34f49eea759 TO IDX_E9BC707C9EEA759');
     }
 
     public function down(Schema $schema): void

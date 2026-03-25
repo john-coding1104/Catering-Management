@@ -19,22 +19,7 @@ final class Version20251212080706 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE booking ADD created_by_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE booking ADD CONSTRAINT FK_E00CEDDEB03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_E00CEDDEB03A8386 ON booking (created_by_id)');
-        $this->addSql('ALTER TABLE inventory ADD created_by_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE inventory ADD CONSTRAINT FK_B12D4A36B03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_B12D4A36B03A8386 ON inventory (created_by_id)');
-        $this->addSql('ALTER TABLE product ADD created_by_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04ADB03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_D34A04ADB03A8386 ON product (created_by_id)');
-        $this->addSql('ALTER TABLE services ADD created_by_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE services ADD CONSTRAINT FK_7332E169B03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_7332E169B03A8386 ON services (created_by_id)');
-        $this->addSql('ALTER TABLE supplier ADD created_by_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE supplier ADD CONSTRAINT FK_9B2A6C7EB03A8386 FOREIGN KEY (created_by_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_9B2A6C7EB03A8386 ON supplier (created_by_id)');
+        // Migration skipped - created_by_id columns already exist in all tables
     }
 
     public function down(Schema $schema): void

@@ -1,19 +1,105 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Every Event</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        
+        .cta-button {
+            background-color: #d97066;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .cta-button:hover {
+            background-color: #c85d54;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(217, 112, 102, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md space-y-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-900">Register</h1>
+                <p class="mt-2 text-gray-600">Create your Every Event account</p>
+            </div>
 
-{% block title %}Register{% endblock %}
+            {% if registrationForm.vars.errors|length %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                    {{ form_errors(registrationForm) }}
+                </div>
+            {% endif %}
 
-{% block body %}
-    <h1>Register</h1>
+            {{ form_start(registrationForm, {'attr': {'class': 'space-y-6'}}) }}
+                <div>
+                    {{ form_widget(registrationForm.username, {
+                        'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400',
+                            'placeholder': 'Username'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.username) }}
+                </div>
 
-    {{ form_errors(registrationForm) }}
+                <div>
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400',
+                            'placeholder': 'Email address',
+                            'autocomplete': 'email'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                <div>
+                    {{ form_widget(registrationForm.plainPassword, {
+                        'attr': {
+                            'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400',
+                            'placeholder': 'Password'
+                        }
+                    }) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
-{% endblock %}
+                <div class="flex items-center">
+                    {{ form_widget(registrationForm.agreeTerms, {
+                        'attr': {
+                            'class': 'h-4 w-4 text-red-400 focus:ring-red-400 border-gray-300 rounded'
+                        }
+                    }) }}
+                    <label class="ml-2 text-gray-700 text-sm">
+                        I agree to the terms and conditions
+                    </label>
+                </div>
+                {{ form_errors(registrationForm.agreeTerms) }}
+
+                <button type="submit" class="w-full cta-button">Register</button>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+</body>
+</html>

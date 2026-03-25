@@ -1,0 +1,153 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Services - Every Event | Premium Catering & Events{% endblock %}
+
+{% block body %}
+    <!-- ========== HERO BREADCRUMB ========== -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold text-gray-900">Our Services</h1>
+            <p class="text-gray-600 mt-2">Comprehensive catering solutions for every occasion</p>
+        </div>
+    </section>
+    
+    <!-- ========== SERVICES GRID ========== -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Service 1: Weddings -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/wedding.jpg" alt="Wedding Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Weddings</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Create the perfect culinary backdrop for your special day. We offer customized multi-course menus, elegant presentation, and impeccable service.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Custom menu design</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Professional staff</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Elegant plating</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Full coordination</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Service 2: Corporate Events -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/corporate.jpg" alt="Corporate Events Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Corporate Events</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Impress your clients and colleagues with professional catering for conferences, meetings, awards banquets, and team celebrations.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Flexible scheduling</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Bulk capabilities</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Professional delivery</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Custom pricing</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Service 3: Private Parties -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/privateparty.jpg" alt="Private Party Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Private Parties</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Whether it's an anniversary or intimate gathering, we create personalized experiences with carefully selected menus that delight.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Customized menus</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Intimate settings</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Flexible sizes</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Personal service</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Service 4: Birthday Celebrations -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/bday.jpg" alt="Birthday Party Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Birthday Celebrations</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Make birthdays extra special with themed menus, elegant presentations, and memorable dining experiences tailored to the guest of honor.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Themed menus</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Dessert packages</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Special arrangements</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Budget options</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Service 5: Engagement Parties -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/engagement.jpg" alt="Engagement Party Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Engagement Parties</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Celebrate your engagement with elegance. Our curated menus and sophisticated ambiance create the perfect setting for this milestone.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Elegant settings</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Romantic menus</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Premium service</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Full coordination</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+                
+                <!-- Service 6: Customized Catering -->
+                <div class="group service-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 fade-in-up">
+                    <div class="relative w-full h-48 overflow-hidden">
+                        <img src="/images/customized.jpg" alt="Customized Catering" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Customized Catering</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                            Have a unique event in mind? We specialize in creating bespoke catering experiences tailored specifically to your vision and dietary needs.
+                        </p>
+                        <ul class="text-gray-600 text-xs space-y-2 mb-6">
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Fully customized</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Dietary accommodation</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Creative menus</li>
+                            <li class="flex items-center"><span class="text-red-500 mr-2">✓</span> Personal consultation</li>
+                        </ul>
+                        <a href="{{ path('app_contact') }}" class="text-red-500 hover:text-red-600 font-semibold text-sm">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ========== CTA SECTION ========== -->
+    <section class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center fade-in-up">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Ready to Book Your Event?</h2>
+                <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Contact us today to discuss your catering needs and get a custom quote for your special occasion.
+                </p>
+                <a href="{{ path('app_contact') }}" class="cta-button">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
